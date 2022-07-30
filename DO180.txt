@@ -1,0 +1,90 @@
+Configuring the Classroom Environment :
+
+To perform this exercise, ensure you have:
+Access to the DO180 course
+developer user account
+free GitHub account
+free Quay.io account
+GitHub access token
+
+$ lab-configure
+
+This script configures the connection parameters to access the OpenShift cluster for your lab scripts.
+
+ · Enter the API Endpoint: `https://api._cluster.domain.example.com_:6443`
+ · Enter the Username: `_youruser_on the site`
+ · Enter the Password: `_yourpassword_ on the site`
+ · Enter the GitHub Account Name: `_yourgituser_name_newly created`
+ · Enter the Quay.io Account Name: `_yourquayuser_name_newly created`
+
+Configuring GITHUB to terminal sync :
+
+git clone https://github.com/gopal181092/OCP.git
+cd OCP
+ls  (see folder containing repo files)
+git status
+git checkout -b test (Create a new branch to test your new personal access token.)
+echo "DO180" > TEST (Make a change to the TEST file and then commit it to Git.)
+git add .
+git commit -am "DO180"
+git push --set-upstream origin test (Push the changes to your recently created testing branch.)
+Username for `https://github.com`: your_git_username
+Password for `https://_yourgituser_@github.com`: github_token
+
+echo "OCP4.6" > TEST
+git add .
+git commit -am "OCP4.6"
+git push
+ls
+cat TEST
+cd ~
+
+Fetching Container Images with Podman :
+
+podman search rhel
+podman pull rhel (downloading/updating rhel image)
+podman images
+podman run ubi8/ubi:8.3 echo 'Hello world!'
+podman login registry.redhat.io
+	username : gopalakrishnan.a.s
+	password : redhat accnt_password
+
+podman run -d -p 8080 registry.redhat.io/rhel8/httpd-24
+podman port -l
+curl http://0.0.0.0:44389
+podman run -it ubi8/ubi:8.3 /bin/bash
+ls
+whoami
+exit
+
+podman run -e GREET=Hello -e NAME=RedHat \
+> ubi8/ubi:8.3 printenv GREET NAME
+
+podman run --name mysql-custom \
+> -e MYSQL_USER=redhat -e MYSQL_PASSWORD=r3dh4t \
+> -e MYSQL_ROOT_PASSWORD=r3dh4t \
+> -d registry.redhat.io/rhel8/mysql-80
+
+lab container-create start
+
+podman run --name mysql-basic \
+> -e MYSQL_USER=user1 -e MYSQL_PASSWORD=mypa55 \
+> -e MYSQL_DATABASE=items -e MYSQL_ROOT_PASSWORD=r00tpa55 \
+> -d registry.redhat.io/rhel8/mysql-80:1
+
+podman ps --format "{{.ID}} {{.Image}} {{.Names}}"
+podman exec -it mysql-basic /bin/bash
+bash-4.2$ mysql -uroot
+mysql> show databases;
+mysql> use items;
+mysql> CREATE TABLE Projects (id int NOT NULL,
+-> name varchar(255) DEFAULT NULL,
+-> code varchar(255) DEFAULT NULL,
+-> PRIMARY KEY (id));
+
+mysql> show tables;
+mysql> insert into Projects (id, name, code) values (1,'DevOps','DO180');
+mysql> select * from Projects;
+mysql> exit
+
+lab container-create finish
